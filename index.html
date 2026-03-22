@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lino Attupuram — Telecom & TelcoCloud Engineer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    /* ── CSS Variables ─────────────────────────────────── */
+    :root {
+      --bg:        #020610;
+      --bg2:       #050d1a;
+      --panel:     rgba(255,255,255,0.03);
+      --border:    rgba(0,220,255,0.15);
+      --neon:      #00dcff;
+      --neon2:     #0066ff;
+      --neon3:     #7b2fff;
+      --accent:    #ff6b35;
+      --text:      #c8d8f0;
+      --text-dim:  #5a7090;
+      --white:     #eaf4ff;
+      --glow:      0 0 20px rgba(0,220,255,0.4), 0 0 60px rgba(0,220,255,0.15);
+      --glow2:     0 0 20px rgba(0,102,255,0.5);
+    }
+
+    /* ── Reset & Base ──────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Syne', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── Custom Cursor ─────────────────────────────────── */
+    #cursor {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--neon);
+      position: fixed; pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .15s, height .15s, background .15s;
+      box-shadow: 0 0 12px var(--neon), 0 0 30px rgba(0,220,255,0.4);
+    }
+    #cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(0,220,255,0.5);
+      border-radius: 50%;
+      position: fixed; pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: transform .08s ease-out, width .15s, height .15s;
+    }
+    body:hover #cursor { opacity: 1; }
+
+    /* ── Canvas Background ─────────────────────────────── */
+    #bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── Nav ───────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 4rem;
+      background: rgba(2,6,16,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Orbitron', monospace;
+      font-size: .85rem; font-weight: 700; letter-spacing: 3px;
+      color: var(--neon);
+      text-shadow: var(--glow);
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem; letter-spacing: 2px; color: var(--text-dim);
+      text-decoration: none; text-transform: uppercase;
+      transition: color .3s, text-shadow .3s;
+    }
+    .nav-links a:hover { color: var(--neon); text-shadow: 0 0 12px var(--neon); }
+
+    /* ── Sections Base ─────────────────────────────────── */
+    section { position: relative; z-index: 1; }
+
+    /* ── HERO ──────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      text-align: center; padding: 6rem 2rem 4rem;
+      overflow: hidden;
+    }
+    .hero-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem; letter-spacing: 4px; color: var(--neon);
+      text-transform: uppercase; margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp 1s .3s forwards;
+    }
+    .hero-tag::before { content: '[ '; }
+    .hero-tag::after  { content: ' ]'; }
+
+    .hero-name {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2.8rem, 7vw, 6rem);
+      font-weight: 900; line-height: 1.05;
+      color: var(--white);
+      letter-spacing: -1px;
+      opacity: 0; animation: fadeUp 1s .5s forwards;
+    }
+    .hero-name span {
+      background: linear-gradient(135deg, var(--neon), var(--neon2), var(--neon3));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 20px rgba(0,220,255,0.6));
+    }
+
+    .hero-title {
+      margin-top: 1.2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(.85rem, 2vw, 1.1rem);
+      color: var(--text-dim); letter-spacing: 2px;
+      opacity: 0; animation: fadeUp 1s .7s forwards;
+    }
+
+    .hero-tagline {
+      margin-top: 1.5rem;
+      font-size: clamp(1rem, 2.5vw, 1.3rem);
+      color: var(--text); max-width: 640px; line-height: 1.6;
+      opacity: 0; animation: fadeUp 1s .9s forwards;
+    }
+    .hero-tagline em { color: var(--neon); font-style: normal; font-weight: 700; }
+
+    .hero-cta {
+      margin-top: 3rem; display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: fadeUp 1s 1.1s forwards;
+    }
+    .btn {
+      padding: .8rem 2.2rem; border-radius: 3px; font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem; letter-spacing: 2px; text-transform: uppercase;
+      text-decoration: none; transition: all .3s; cursor: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--neon2), var(--neon));
+      color: #000; font-weight: 700;
+      box-shadow: 0 0 25px rgba(0,220,255,0.4);
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 45px rgba(0,220,255,0.7), 0 0 80px rgba(0,220,255,0.3);
+      transform: translateY(-2px);
+    }
+    .btn-outline {
+      border: 1px solid var(--neon); color: var(--neon);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: rgba(0,220,255,0.08);
+      box-shadow: var(--glow);
+      transform: translateY(-2px);
+    }
+
+    .hero-scroll {
+      margin-top: 4rem;
+      opacity: 0; animation: fadeUp 1s 1.3s forwards;
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--neon), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    .scroll-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem; letter-spacing: 3px; color: var(--text-dim);
+    }
+
+    /* ── ABOUT ─────────────────────────────────────────── */
+    #about {
+      padding: 8rem 2rem;
+      display: flex; justify-content: center;
+    }
+    .about-inner {
+      max-width: 1100px; width: 100%;
+      display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; align-items: center;
+    }
+    .about-left { position: relative; }
+    .about-badge {
+      position: relative; width: 260px; height: 260px;
+      margin: 0 auto;
+    }
+    .badge-ring {
+      position: absolute; inset: 0; border-radius: 50%;
+      border: 1px solid rgba(0,220,255,0.3);
+      animation: rotate 20s linear infinite;
+    }
+    .badge-ring::before {
+      content: '';
+      position: absolute; top: -4px; left: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--neon);
+      box-shadow: var(--glow);
+    }
+    .badge-inner {
+      position: absolute; inset: 20px;
+      background: linear-gradient(135deg, rgba(0,102,255,0.15), rgba(0,220,255,0.05));
+      border-radius: 50%;
+      border: 1px solid rgba(0,220,255,0.2);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: .5rem;
+    }
+    .badge-icon { font-size: 3.5rem; color: var(--neon); text-shadow: var(--glow); }
+    .badge-text {
+      font-family: 'Orbitron', monospace;
+      font-size: .65rem; letter-spacing: 3px; color: var(--neon);
+      text-align: center; line-height: 1.6;
+    }
+    .stat-chips {
+      display: flex; flex-wrap: wrap; gap: .6rem; justify-content: center;
+      margin-top: 2rem;
+    }
+    .stat-chip {
+      padding: .4rem 1rem;
+      background: rgba(0,220,255,0.06);
+      border: 1px solid rgba(0,220,255,0.2);
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem; color: var(--neon); letter-spacing: 1px;
+    }
+    .about-right { }
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem; letter-spacing: 4px; color: var(--neon);
+      text-transform: uppercase; margin-bottom: 1rem;
+    }
+    .section-label::before { content: '//  '; opacity: .5; }
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 700;
+      color: var(--white); line-height: 1.2; margin-bottom: 1.5rem;
+    }
+    .about-text {
+      font-size: 1rem; line-height: 1.85; color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .about-text strong { color: var(--neon); font-weight: 600; }
+    .cert-row {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;
+    }
+    .cert-badge {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .5rem 1rem;
+      background: rgba(255,107,53,0.08);
+      border: 1px solid rgba(255,107,53,0.3);
+      border-radius: 3px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; color: var(--accent);
+    }
+
+    /* ── SKILLS ────────────────────────────────────────── */
+    #skills {
+      padding: 8rem 2rem;
+      background: linear-gradient(180deg, transparent, rgba(0,102,255,0.03), transparent);
+    }
+    .skills-inner { max-width: 1100px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .skill-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+    .skill-card {
+      padding: 1.8rem 2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      position: relative; overflow: hidden;
+      transition: border-color .3s, box-shadow .3s, transform .3s;
+    }
+    .skill-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon), transparent);
+      opacity: 0; transition: opacity .3s;
+    }
+    .skill-card:hover {
+      border-color: rgba(0,220,255,0.4);
+      box-shadow: 0 0 30px rgba(0,220,255,0.08), inset 0 0 30px rgba(0,220,255,0.03);
+      transform: translateY(-3px);
+    }
+    .skill-card:hover::before { opacity: 1; }
+    .skill-card-icon {
+      font-size: 1.8rem; color: var(--neon);
+      text-shadow: 0 0 15px var(--neon);
+      margin-bottom: 1rem;
+    }
+    .skill-card-title {
+      font-family: 'Orbitron', monospace;
+      font-size: .85rem; font-weight: 700; letter-spacing: 1px;
+      color: var(--white); margin-bottom: .8rem;
+    }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+    .skill-tag {
+      padding: .25rem .7rem;
+      background: rgba(0,220,255,0.07);
+      border: 1px solid rgba(0,220,255,0.2);
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem; color: var(--text); letter-spacing: .5px;
+      transition: background .3s, color .3s;
+    }
+    .skill-card:hover .skill-tag {
+      background: rgba(0,220,255,0.12);
+      color: var(--neon);
+    }
+
+    /* ── EXPERIENCE ────────────────────────────────────── */
+    #experience { padding: 8rem 2rem; }
+    .exp-inner { max-width: 900px; margin: 0 auto; }
+    .timeline { position: relative; padding-left: 3rem; }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0; width: 1px;
+      background: linear-gradient(to bottom, var(--neon), var(--neon2), transparent);
+    }
+    .exp-item {
+      position: relative; margin-bottom: 3.5rem;
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity .6s, transform .6s;
+    }
+    .exp-item.visible { opacity: 1; transform: translateX(0); }
+    .exp-dot {
+      position: absolute; left: -3.35rem;
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--neon);
+      box-shadow: 0 0 12px var(--neon), 0 0 30px rgba(0,220,255,0.4);
+      top: .4rem;
+    }
+    .exp-dot::before {
+      content: '';
+      position: absolute; inset: -5px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,220,255,0.3);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    .exp-card {
+      padding: 1.8rem 2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: border-color .3s, box-shadow .3s;
+    }
+    .exp-card:hover {
+      border-color: rgba(0,220,255,0.35);
+      box-shadow: 0 0 25px rgba(0,220,255,0.06);
+    }
+    .exp-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+    .exp-role {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem; font-weight: 700; color: var(--white);
+    }
+    .exp-company { color: var(--neon); font-size: .9rem; font-weight: 600; margin-top: .2rem; }
+    .exp-period {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem; letter-spacing: 1px; color: var(--text-dim);
+      padding: .3rem .8rem;
+      border: 1px solid rgba(0,220,255,0.15);
+      border-radius: 2px; white-space: nowrap;
+    }
+    .exp-bullets { list-style: none; margin-top: 1rem; }
+    .exp-bullets li {
+      font-size: .9rem; color: var(--text); line-height: 1.7;
+      padding: .3rem 0 .3rem 1.2rem; position: relative;
+    }
+    .exp-bullets li::before {
+      content: '▸';
+      position: absolute; left: 0; color: var(--neon); font-size: .7rem; top: .4rem;
+    }
+    .exp-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1.2rem; }
+    .exp-tag {
+      padding: .2rem .6rem;
+      background: rgba(0,102,255,0.12);
+      border: 1px solid rgba(0,102,255,0.25);
+      border-radius: 2px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .62rem; color: #6ab0ff; letter-spacing: .5px;
+    }
+
+    /* ── PROJECTS / HIGHLIGHTS ─────────────────────────── */
+    #highlights { padding: 8rem 2rem; background: linear-gradient(180deg, transparent, rgba(123,47,255,0.04), transparent); }
+    .highlights-inner { max-width: 1100px; margin: 0 auto; }
+    .highlights-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;
+    }
+    .highlight-card {
+      padding: 2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px; position: relative; overflow: hidden;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .6s, transform .6s, border-color .3s, box-shadow .3s;
+    }
+    .highlight-card.visible { opacity: 1; transform: translateY(0); }
+    .highlight-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon3), var(--neon2), var(--neon));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .4s;
+    }
+    .highlight-card:hover { border-color: rgba(123,47,255,0.4); box-shadow: 0 0 30px rgba(123,47,255,0.1); }
+    .highlight-card:hover::after { transform: scaleX(1); }
+    .highlight-num {
+      font-family: 'Orbitron', monospace;
+      font-size: 2.5rem; font-weight: 900;
+      color: rgba(0,220,255,0.08); position: absolute; top: 1rem; right: 1.2rem;
+    }
+    .highlight-icon { font-size: 1.5rem; color: var(--neon3); text-shadow: 0 0 15px var(--neon3); margin-bottom: 1rem; }
+    .highlight-title {
+      font-family: 'Orbitron', monospace;
+      font-size: .9rem; font-weight: 700; color: var(--white); margin-bottom: .7rem;
+    }
+    .highlight-desc { font-size: .88rem; color: var(--text); line-height: 1.7; }
+
+    /* ── CONTACT ───────────────────────────────────────── */
+    #contact { padding: 8rem 2rem 6rem; text-align: center; }
+    .contact-inner { max-width: 700px; margin: 0 auto; }
+    .contact-grid {
+      display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+    .contact-card {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.2rem 2rem;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 4px; text-decoration: none;
+      color: var(--text); transition: all .3s; cursor: none;
+    }
+    .contact-card:hover {
+      border-color: var(--neon);
+      box-shadow: var(--glow);
+      color: var(--neon);
+      transform: translateY(-3px);
+    }
+    .contact-card i { font-size: 1.3rem; color: var(--neon); }
+    .contact-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; letter-spacing: 1px;
+    }
+
+    /* ── Footer ────────────────────────────────────────── */
+    footer {
+      text-align: center; padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem; letter-spacing: 2px; color: var(--text-dim);
+    }
+
+    /* ── Animations ────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+    @keyframes pulse {
+      0%, 100% { opacity: .4; transform: scale(1); }
+      50%       { opacity: .8; transform: scale(1.6); }
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: .3; transform: scaleY(1); }
+      50%       { opacity: 1; transform: scaleY(1.1); }
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .typing-cursor {
+      display: inline-block; width: 2px; height: 1em;
+      background: var(--neon); margin-left: 2px; vertical-align: middle;
+      animation: blink 1s step-end infinite;
+    }
+
+    /* ── Reveal utility ────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── Mobile ────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .nav-links a { font-size: .65rem; }
+      .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .about-badge { width: 200px; height: 200px; }
+      .timeline { padding-left: 2rem; }
+      .exp-dot { left: -2.3rem; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Animated particle canvas -->
+<canvas id="bg-canvas"></canvas>
+
+<!-- ────────────────── NAV ────────────────── -->
+<nav>
+  <div class="nav-logo">LINO.AG</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#highlights">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ────────────────── HERO ────────────────── -->
+<section id="hero">
+  <div class="hero-tag">Available for new opportunities</div>
+  <h1 class="hero-name">Lino <span>Attupuram</span></h1>
+  <div class="hero-title" id="typed-title"></div>
+  <p class="hero-tagline">
+    Architecting the <em>backbone of tomorrow's networks</em> — from deep SS7 signaling to cloud-native 5G infrastructure.
+  </p>
+  <div class="hero-cta">
+    <a href="#contact" class="btn btn-primary">Get In Touch</a>
+    <a href="#experience" class="btn btn-outline">View Journey</a>
+  </div>
+  <div class="hero-scroll">
+    <span class="scroll-label">SCROLL</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ────────────────── ABOUT ────────────────── -->
+<section id="about">
+  <div class="about-inner">
+    <div class="about-left reveal">
+      <div class="about-badge">
+        <div class="badge-ring"></div>
+        <div class="badge-inner">
+          <i class="fas fa-network-wired badge-icon"></i>
+          <div class="badge-text">14+ YRS<br>TELECOM<br>EXPERTISE</div>
+        </div>
+      </div>
+      <div class="stat-chips">
+        <div class="stat-chip">14+ Years</div>
+        <div class="stat-chip">Tier-1 Operators</div>
+        <div class="stat-chip">Global Roaming</div>
+        <div class="stat-chip">5G Lab</div>
+        <div class="stat-chip">CCNA Certified</div>
+      </div>
+    </div>
+    <div class="about-right reveal">
+      <div class="section-label">About Me</div>
+      <h2 class="section-title">Connecting the World,<br>One Packet at a Time</h2>
+      <p class="about-text">
+        I'm a <strong>Telecom & Cloud-Native Engineer</strong> with deep expertise in core network technologies — SS7 signaling, LTE/VoLTE, IMS, and international roaming. I've built and optimized infrastructure that millions of subscribers rely on daily.
+      </p>
+      <p class="about-text">
+        From L2/L3 NOC operations to <strong>end-to-end CS & IMS Core deployment</strong> supporting Tier-1 operators, I thrive at the intersection of legacy telecom depth and modern cloud-native innovation. I actively maintain a personal <strong>5G lab</strong> exploring containerized network deployments and next-gen architecture.
+      </p>
+      <p class="about-text">
+        Currently expanding into <strong>AWS, Docker, Kubernetes</strong> and cloud-native telecom systems — bridging decades of protocol expertise with the agility of modern DevOps.
+      </p>
+      <div class="cert-row">
+        <div class="cert-badge"><i class="fas fa-certificate"></i> CCNA Certified</div>
+        <div class="cert-badge"><i class="fas fa-flask"></i> Personal 5G Lab</div>
+        <div class="cert-badge"><i class="fas fa-code"></i> Python Automation</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── SKILLS ────────────────── -->
+<section id="skills">
+  <div class="skills-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Technical Arsenal</div>
+      <h2 class="section-title">Core Competencies</h2>
+    </div>
+    <div class="skill-grid">
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-signal"></i></div>
+        <div class="skill-card-title">5G / 4G LTE Networks</div>
+        <div class="skill-tags">
+          <span class="skill-tag">5G NR</span><span class="skill-tag">LTE/EPC</span>
+          <span class="skill-tag">IMS Core</span><span class="skill-tag">VoLTE</span>
+          <span class="skill-tag">VoNR</span><span class="skill-tag">IMS/VoIP</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-exchange-alt"></i></div>
+        <div class="skill-card-title">SS7 & Signaling</div>
+        <div class="skill-tags">
+          <span class="skill-tag">SS7/SIGTRAN</span><span class="skill-tag">Diameter</span>
+          <span class="skill-tag">SCCP</span><span class="skill-tag">MAP</span>
+          <span class="skill-tag">ISUP</span><span class="skill-tag">M2PA/M3UA</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-cloud"></i></div>
+        <div class="skill-card-title">TelcoCloud & NFV</div>
+        <div class="skill-tags">
+          <span class="skill-tag">AWS</span><span class="skill-tag">Docker</span>
+          <span class="skill-tag">Kubernetes</span><span class="skill-tag">NFV</span>
+          <span class="skill-tag">Cloud-Native</span><span class="skill-tag">Virtualization</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-globe"></i></div>
+        <div class="skill-card-title">International Roaming</div>
+        <div class="skill-tags">
+          <span class="skill-tag">IPX/VPN</span><span class="skill-tag">GTP (S8)</span>
+          <span class="skill-tag">Diameter S6a</span><span class="skill-tag">IREG</span>
+          <span class="skill-tag">IR.21</span><span class="skill-tag">GSMA</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-server"></i></div>
+        <div class="skill-card-title">Network Platforms</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Oracle EAGLE STP</span><span class="skill-tag">DSR</span>
+          <span class="skill-tag">Cisco ITP</span><span class="skill-tag">Sonus DSC</span>
+          <span class="skill-tag">ACME SBC</span><span class="skill-tag">Tekelec STP</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-tools"></i></div>
+        <div class="skill-card-title">Tools & Automation</div>
+        <div class="skill-tags">
+          <span class="skill-tag">Wireshark</span><span class="skill-tag">Agilent</span>
+          <span class="skill-tag">Python</span><span class="skill-tag">GitLab CI</span>
+          <span class="skill-tag">Tekno</span><span class="skill-tag">Oracle PIC</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-comments"></i></div>
+        <div class="skill-card-title">Messaging & A2P</div>
+        <div class="skill-tags">
+          <span class="skill-tag">A2P SMS</span><span class="skill-tag">SMPP</span>
+          <span class="skill-tag">RCS Messaging</span><span class="skill-tag">SS7 Routing</span>
+          <span class="skill-tag">T-Mobile RCS</span>
+        </div>
+      </div>
+
+      <div class="skill-card reveal">
+        <div class="skill-card-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="skill-card-title">Security & Infra</div>
+        <div class="skill-tags">
+          <span class="skill-tag">SRX Firewall</span><span class="skill-tag">VPN Tunnels</span>
+          <span class="skill-tag">IPSec</span><span class="skill-tag">Network Screening</span>
+          <span class="skill-tag">Gateway Screening</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── EXPERIENCE ────────────────── -->
+<section id="experience">
+  <div class="exp-inner">
+    <div class="section-header reveal" style="text-align:center;margin-bottom:4rem;">
+      <div class="section-label">Career Timeline</div>
+      <h2 class="section-title">Professional Journey</h2>
+    </div>
+    <div class="timeline">
+
+      <!-- Annecto -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card">
+          <div class="exp-header">
+            <div>
+              <div class="exp-role">Core Network Lead — Messaging</div>
+              <div class="exp-company">Annecto Telecom</div>
+            </div>
+            <div class="exp-period">Feb 2025 – Present</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Leading SS7 routing and signaling for global A2P SMS delivery and reachability.</li>
+            <li>Testing, troubleshooting, and optimizing global messaging routes for high delivery success and network reliability.</li>
+            <li>Developed Python-based automation scripts for testing and validation using VS Code and GitLab CI/CD pipelines.</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="exp-tag">SS7</span><span class="exp-tag">A2P SMS</span>
+            <span class="exp-tag">Python Automation</span><span class="exp-tag">GitLab</span><span class="exp-tag">Signaling</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Oracle -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card">
+          <div class="exp-header">
+            <div>
+              <div class="exp-role">Senior Consultant</div>
+              <div class="exp-company">Oracle</div>
+            </div>
+            <div class="exp-period">Nov 2020 – Jul 2023</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Led the Vodafone–Idea merger migration across 20 Pan-India sites — coordinating STP, DRA, and Core node integration.</li>
+            <li>Hardware capacity expansion of Oracle STPs across all Pan-India sites to absorb additional MNP and Idea traffic.</li>
+            <li>Upgraded Oracle MNP database (PDBI/RTDB) from 240M to 480M records.</li>
+            <li>Planned and executed full traffic migration for IDP-CALL/SMS, SRI-CALL, LCS, USSD, ATI protocols.</li>
+            <li>Swapped STP and DSR infrastructure from Huawei to Oracle for VodafoneIdea India.</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="exp-tag">Oracle EAGLE STP</span><span class="exp-tag">DRA</span>
+            <span class="exp-tag">ACME SBC</span><span class="exp-tag">MNP Migration</span>
+            <span class="exp-tag">Project Management</span><span class="exp-tag">Vodafone India</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Syniverse -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card">
+          <div class="exp-header">
+            <div>
+              <div class="exp-role">Sr. Network Implementation Engineer</div>
+              <div class="exp-company">Syniverse Technologies</div>
+            </div>
+            <div class="exp-period">Apr 2015 – Oct 2020</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Deployed RCS Messaging infrastructure for T-Mobile USA, including Google–T-Mobile peering project.</li>
+            <li>Implemented Diameter (S6a) LTE connections and GTP (S8) routes with global operators over IPX.</li>
+            <li>Built Sigtran M2PA/M3UA connectivity over IPX/VPN for global roaming partners.</li>
+            <li>Provided Tier-2/3 on-call support for IMS/VoIP, SS7, LTE, and International Roaming for worldwide operators.</li>
+            <li>Provisioned SRX firewall routes, VPN tunnels, and managed STP GT routing and load balancing.</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="exp-tag">LTE/Diameter</span><span class="exp-tag">RCS</span>
+            <span class="exp-tag">IMS/VoIP</span><span class="exp-tag">Sigtran</span>
+            <span class="exp-tag">IPX</span><span class="exp-tag">SRX Firewall</span><span class="exp-tag">International Roaming</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- TATA -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card">
+          <div class="exp-header">
+            <div>
+              <div class="exp-role">Network Engineer</div>
+              <div class="exp-company">TATA Communications Ltd. (fka VSNL)</div>
+            </div>
+            <div class="exp-period">Nov 2011 – Apr 2015</div>
+          </div>
+          <ul class="exp-bullets">
+            <li>Managed IREG coordination and testing for global mobile roaming, including A2P messaging via SMPP/SS7.</li>
+            <li>Planned and implemented SCCP migrations (on-net and off-net) for hub providers and IGPs worldwide.</li>
+            <li>Configured Tekelec STP: GT routing, load balancing, link management, and full provisioning via MSPS/REACT.</li>
+            <li>Implemented numbering plans for ITU and ANSI MNOs; managed international roaming IR.21 configurations.</li>
+          </ul>
+          <div class="exp-tags">
+            <span class="exp-tag">Tekelec STP</span><span class="exp-tag">SCCP</span>
+            <span class="exp-tag">A2P</span><span class="exp-tag">IREG</span>
+            <span class="exp-tag">GT Routing</span><span class="exp-tag">Agilent Probing</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── HIGHLIGHTS ────────────────── -->
+<section id="highlights">
+  <div class="highlights-inner">
+    <div class="section-header reveal" style="text-align:center;margin-bottom:4rem;">
+      <div class="section-label">Featured Work</div>
+      <h2 class="section-title">Signature Achievements</h2>
+    </div>
+    <div class="highlights-grid">
+
+      <div class="highlight-card">
+        <div class="highlight-num">01</div>
+        <div class="highlight-icon"><i class="fas fa-project-diagram"></i></div>
+        <div class="highlight-title">VodafoneIdea Merger Migration</div>
+        <div class="highlight-desc">Led one of India's largest telecom infrastructure migrations — integrating all Core nodes from Idea to Vodafone across 20 Pan-India sites, swapping STP/DSR from Huawei to Oracle with zero service disruption.</div>
+      </div>
+
+      <div class="highlight-card">
+        <div class="highlight-num">02</div>
+        <div class="highlight-icon"><i class="fas fa-comment-dots"></i></div>
+        <div class="highlight-title">Google–T-Mobile RCS Peering</div>
+        <div class="highlight-desc">Completed the RCS messaging peering project between Google and T-Mobile USA — delivering next-generation rich communications on a mission-critical global platform.</div>
+      </div>
+
+      <div class="highlight-card">
+        <div class="highlight-num">03</div>
+        <div class="highlight-icon"><i class="fas fa-database"></i></div>
+        <div class="highlight-title">MNP Database Scale-Up</div>
+        <div class="highlight-desc">Engineered the upgrade of Oracle's MNP database (PDBI/RTDB) from 240 million to 480 million records — doubling number portability capacity for one of India's largest mobile operators.</div>
+      </div>
+
+      <div class="highlight-card">
+        <div class="highlight-num">04</div>
+        <div class="highlight-icon"><i class="fas fa-flask"></i></div>
+        <div class="highlight-title">Personal 5G Lab</div>
+        <div class="highlight-desc">Built and actively maintain a personal 5G lab environment to explore next-generation network architectures, containerized (Docker/K8s) deployments, and cloud-native telecom evolution beyond training environments.</div>
+      </div>
+
+      <div class="highlight-card">
+        <div class="highlight-num">05</div>
+        <div class="highlight-icon"><i class="fas fa-code-branch"></i></div>
+        <div class="highlight-title">Python Automation for Telecom Testing</div>
+        <div class="highlight-desc">Developed Python-based automation scripts for SS7 route testing and validation, integrated with GitLab CI/CD pipelines — accelerating delivery cycles and reducing manual testing effort significantly.</div>
+      </div>
+
+      <div class="highlight-card">
+        <div class="highlight-num">06</div>
+        <div class="highlight-icon"><i class="fas fa-globe-asia"></i></div>
+        <div class="highlight-title">Global LTE Roaming Rollout</div>
+        <div class="highlight-desc">Implemented Diameter S6a LTE connections and GTP S8 routes with global operators over IPX at Syniverse — enabling seamless LTE international roaming for operators worldwide.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ────────────────── CONTACT ────────────────── -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="section-label reveal" style="text-align:center;">Get In Touch</div>
+    <h2 class="section-title reveal" style="text-align:center;">Let's Build the<br>Future of Networks</h2>
+    <p class="about-text reveal" style="text-align:center;margin-top:1rem;">
+      Open to opportunities in core telecom, IMS, Diameter signaling, and cloud-native network environments.
+    </p>
+    <div class="contact-grid reveal">
+      <a href="mailto:lino.ag@gmail.com" class="contact-card">
+        <i class="fas fa-envelope"></i>
+        <span class="contact-label">lino.ag@gmail.com</span>
+      </a>
+      <a href="https://www.linkedin.com/in/lino-attupuram" target="_blank" class="contact-card">
+        <i class="fab fa-linkedin"></i>
+        <span class="contact-label">LinkedIn Profile</span>
+      </a>
+      <a href="https://github.com" target="_blank" class="contact-card">
+        <i class="fab fa-github"></i>
+        <span class="contact-label">GitHub Projects</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  &copy; 2025 LINO ATTUPURAM — TELECOM & TELCOCLOUD ENGINEER — CORBY, UK
+</footer>
+
+<!-- ────────────────── JAVASCRIPT ────────────────── -->
+<script>
+/* ── Custom Cursor ── */
+const cursor     = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animCursor() {
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  cursor.style.left     = mx + 'px'; cursor.style.top = my + 'px';
+  cursorRing.style.left = rx + 'px'; cursorRing.style.top = ry + 'px';
+  requestAnimationFrame(animCursor);
+})();
+document.querySelectorAll('a, button, .skill-card, .exp-card, .highlight-card, .contact-card')
+  .forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.width = '18px'; cursor.style.height = '18px'; });
+    el.addEventListener('mouseleave', () => { cursor.style.width = '10px'; cursor.style.height = '10px'; });
+  });
+
+/* ── Particle Canvas ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx    = canvas.getContext('2d');
+let W, H, nodes;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initNodes(); });
+
+function initNodes() {
+  nodes = Array.from({ length: 80 }, () => ({
+    x: Math.random() * W, y: Math.random() * H,
+    vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+    r: Math.random() * 2 + 1
+  }));
+}
+initNodes();
+
+function drawFrame() {
+  ctx.clearRect(0, 0, W, H);
+  nodes.forEach(n => {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+    ctx.beginPath();
+    ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,220,255,0.5)';
+    ctx.fill();
+  });
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i + 1; j < nodes.length; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const d  = Math.sqrt(dx*dx + dy*dy);
+      if (d < 140) {
+        ctx.beginPath();
+        ctx.moveTo(nodes[i].x, nodes[i].y);
+        ctx.lineTo(nodes[j].x, nodes[j].y);
+        ctx.strokeStyle = `rgba(0,102,255,${(1 - d/140) * 0.18})`;
+        ctx.lineWidth = .6;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawFrame);
+}
+drawFrame();
+
+/* ── Typing Animation ── */
+const titles   = ['Telecom | 5G | TelcoCloud Expert', 'SS7 & IMS Core Specialist', 'Cloud-Native Network Architect', 'International Roaming Engineer'];
+let ti = 0, ci = 0, deleting = false;
+const el = document.getElementById('typed-title');
+
+function typeLoop() {
+  const current = titles[ti];
+  if (!deleting) {
+    el.innerHTML = current.slice(0, ++ci) + '<span class="typing-cursor"></span>';
+    if (ci === current.length) { deleting = true; setTimeout(typeLoop, 2200); return; }
+    setTimeout(typeLoop, 60);
+  } else {
+    el.innerHTML = current.slice(0, --ci) + '<span class="typing-cursor"></span>';
+    if (ci === 0) { deleting = false; ti = (ti + 1) % titles.length; setTimeout(typeLoop, 300); return; }
+    setTimeout(typeLoop, 30);
+  }
+}
+setTimeout(typeLoop, 1800);
+
+/* ── Scroll Reveal ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.reveal, .exp-item, .highlight-card').forEach(el => observer.observe(el));
+
+/* ── Stagger highlights ── */
+document.querySelectorAll('.highlight-card').forEach((card, i) => {
+  card.style.transitionDelay = (i * 0.1) + 's';
+});
+
+/* ── Stagger skill cards ── */
+document.querySelectorAll('.skill-card').forEach((card, i) => {
+  card.style.transitionDelay = (i * 0.08) + 's';
+  observer.observe(card);
+});
+</script>
+</body>
+</html>
